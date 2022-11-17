@@ -1,27 +1,97 @@
+import { useState, useEffect } from "react";
 import { Helmet } from 'react-helmet-async';
 import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography } from '@mui/material';
+import { Grid, Container, Typography, TextField, Button } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import SendIcon from '@mui/icons-material/Send';
 // components
 import Iconify from '../components/iconify';
 // sections
 import {
-  AppTasks,
+  /* AppTasks,
   AppNewsUpdate,
   AppOrderTimeline,
   AppCurrentVisits,
-  AppWebsiteVisits,
   AppTrafficBySite,
   AppWidgetSummary,
   AppCurrentSubject,
-  AppConversionRates,
+  AppConversionRates, */
+  AppWebsiteVisits,
+  CCRun
 } from '../sections/@dashboard/app';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
+  const [urls, setUrls] = useState ("")
+  const [kural, setKural] = useState ("")
+  const [doviz, setDoviz] = useState ("")
+  const [loading, setLoading] = useState (false)
+
+  // local storage handling
+  useEffect (() => {
+    if (localStorage.urls) {
+      setUrls(localStorage.getItem("urls"))
+    }
+  }, [])
+  useEffect (() => {
+    localStorage.urls = urls
+  }, [urls])
+  useEffect (() => {
+    if (localStorage.kural) {
+      setKural(localStorage.getItem("kural"))
+    }
+  }, [])
+  useEffect (() => {
+    localStorage.kural = kural
+  }, [kural])
+  useEffect (() => {
+    if (localStorage.doviz) {
+      setDoviz(localStorage.getItem("doviz"))
+    }
+  }, [])
+  useEffect (() => {
+    localStorage.doviz = doviz
+  }, [doviz])
+
+  function handleRun (e) {
+    setLoading(true)
+    e.preventDefault()
+    fetch("/run", {
+      method: "POST",
+      body: JSON.stringify({"urls": e.target.urls.value, "kural": e.target.kural.value, "doviz": e.target.doviz.value}),
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+    .then(res => {
+      // res.blob()) 
+        return res.blob()
+    })
+    .then (files => {
+      // console.log(struct.files)
+      // const files = struct.files.blob()
+      // const href = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(new Blob([files]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'output.zip'); // or any other extension
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // console.log(struct.stats)
+      setLoading(false)
+    })
+    .catch((err) => {
+        // return Promise.reject("Error: Something Went Wrong", err );
+        // Promise.reject(new Error('Something went wrong'));
+        err.json()
+          .then(errjson => console.log(errjson))
+    })
+  }
 
   return (
     <>
@@ -31,11 +101,78 @@ export default function DashboardAppPage() {
 
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
-          Hi, Welcome back
+          Merhaba, hosgeldin
         </Typography>
 
+       { /* <Grid item xs={12} md={6} lg={8} sx={{mb:3,}}>
+          <AppWebsiteVisits
+            title="Yuklenen Urun Sayisi"
+            subheader="Tekil Urun"
+            chartLabels={[
+              '01/01/2003',
+              '02/01/2003',
+              '03/01/2003',
+              '04/01/2003',
+              '05/01/2003',
+              '06/01/2003',
+              '07/01/2003',
+              '08/01/2003',
+              '09/01/2003',
+              '10/01/2003',
+              '11/01/2003',
+            ]}
+            chartData={[
+              {
+                name: 'Balik Tutulmasi',
+                type: 'column',
+                fill: 'solid',
+                data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+              },
+              {
+                name: 'Team B',
+                type: 'area',
+                fill: 'gradient',
+                data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
+              },
+              {
+                name: 'Team C',
+                type: 'line',
+                fill: 'solid',
+                data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
+              },
+            ]}
+          />
+        </Grid> */ }
+        <form onSubmit={handleRun}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
+            <TextField value={urls} disabled={loading}
+                onChange={(e)=> setUrls(e.target.value)} id="urls" label="XML Listesi" variant="outlined" multiline required size="small" helperText="Her url ayri bir satirda olacak"/>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField value={kural} disabled={loading}
+                onChange={(e) => setKural(e.target.value)} id="kural" label="Kurallar" variant="outlined" multiline required size="small"/>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField value={doviz} disabled={loading}
+                onChange={(e) => setDoviz(e.target.value)} id="doviz" label="Doviz Kurlari" variant="outlined" multiline required size="small"/>
+          </Grid>
+
+          {/* <Grid onClick={handleRun} item xs={12} sm={6} md={3}>
+            <CCRun title="Calistir" total={0} icon={'ant-design:android-filled'}  required/>
+          </Grid> */}
+          <Grid item xs={12} sm={6} md={3}>
+            {loading  ?
+              <LoadingButton type="button" disabled="true" variant="contained" endIcon={<SendIcon />}>
+                Hazirlaniyor...
+              </LoadingButton>
+                      :
+              <Button type="submit" variant="contained" endIcon={<SendIcon />}>
+                Calistir
+              </Button>
+              }
+            </Grid>
+         { /* <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
           </Grid>
 
@@ -51,45 +188,6 @@ export default function DashboardAppPage() {
             <AppWidgetSummary title="Bug Reports" total={234} color="error" icon={'ant-design:bug-filled'} />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
-            <AppWebsiteVisits
-              title="Website Visits"
-              subheader="(+43%) than last year"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ]}
-              chartData={[
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-              ]}
-            />
-          </Grid>
 
           <Grid item xs={12} md={6} lg={4}>
             <AppCurrentVisits
@@ -211,8 +309,9 @@ export default function DashboardAppPage() {
                 { id: '5', label: 'Sprint Showcase' },
               ]}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
+        </form>
       </Container>
     </>
   );
