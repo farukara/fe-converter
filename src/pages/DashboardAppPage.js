@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography, TextField, Button } from '@mui/material';
+import { Grid, Container, Box, Typography, TextField, Button , FormControl, Input, InputLabel, InputAdornment} from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 // components
@@ -30,8 +30,11 @@ export default function DashboardAppPage() {
   const [kural, setKural] = useState ("")
   const [doviz, setDoviz] = useState ("")
   const [loading, setLoading] = useState (false)
+  const [euro, setEuro] = useState ("")
+  const [dolar, setDolar] = useState ("")
 
   // local storage handling
+  // +++++ urls
   useEffect (() => {
     if (localStorage.urls) {
       setUrls(localStorage.getItem("urls"))
@@ -40,6 +43,7 @@ export default function DashboardAppPage() {
   useEffect (() => {
     localStorage.urls = urls
   }, [urls])
+  // +++++ kural
   useEffect (() => {
     if (localStorage.kural) {
       setKural(localStorage.getItem("kural"))
@@ -48,21 +52,31 @@ export default function DashboardAppPage() {
   useEffect (() => {
     localStorage.kural = kural
   }, [kural])
+  // +++++ dolar
   useEffect (() => {
-    if (localStorage.doviz) {
-      setDoviz(localStorage.getItem("doviz"))
+    if (localStorage.dolar) {
+      setDolar(localStorage.getItem("dolar"))
     }
   }, [])
   useEffect (() => {
-    localStorage.doviz = doviz
-  }, [doviz])
+    localStorage.dolar = dolar
+  }, [dolar])
+  // +++++ euro
+  useEffect (() => {
+    if (localStorage.euro) {
+      setEuro(localStorage.getItem("euro"))
+    }
+  }, [])
+  useEffect (() => {
+    localStorage.euro = euro
+  }, [euro])
 
   function handleRun (e) {
     setLoading(true)
     e.preventDefault()
     fetch("/run", {
       method: "POST",
-      body: JSON.stringify({"urls": e.target.urls.value, "kural": e.target.kural.value, "doviz": e.target.doviz.value}),
+      body: JSON.stringify({"urls": e.target.urls.value, "kural": e.target.kural.value, "euro": e.target.euro.value, "dolar":e.target.dolar.value}),
       headers: {
         "Content-Type": "application/json"
       },
@@ -154,23 +168,40 @@ export default function DashboardAppPage() {
                 onChange={(e) => setKural(e.target.value)} id="kural" label="Kurallar" variant="outlined" multiline required size="small"/>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <TextField value={doviz} disabled={loading}
-                onChange={(e) => setDoviz(e.target.value)} id="doviz" label="Doviz Kurlari" variant="outlined" multiline required size="small"/>
+            <Box>
+              <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+                <InputLabel htmlFor="euro">Euro</InputLabel>
+                <Input
+                  disabled={loading}
+                  id="euro"
+                  value={euro}
+                  onChange={(e) => setEuro(e.target.value)}
+                  startAdornment={<InputAdornment position="start">€</InputAdornment>}
+                  variant="outlined"
+                    helperText="Please enter your name"
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+                <InputLabel htmlFor="dolar">Dolar</InputLabel>
+                <Input
+                  disabled={loading}
+                  id="dolar"
+                  value={dolar}
+                  onChange={(e) => setDolar(e.target.value)}
+                  startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                  variant="outlined"
+                />
+              </FormControl>
+            </Box>
           </Grid>
 
           {/* <Grid onClick={handleRun} item xs={12} sm={6} md={3}>
             <CCRun title="Calistir" total={0} icon={'ant-design:android-filled'}  required/>
           </Grid> */}
           <Grid item xs={12} sm={6} md={3}>
-            {loading  ?
-              <LoadingButton type="button" disabled="true" variant="contained" endIcon={<SendIcon />}>
-                Hazirlaniyor...
-              </LoadingButton>
-                      :
-              <Button type="submit" variant="contained" endIcon={<SendIcon />}>
+              <LoadingButton type="submit" loading={loading} variant="contained" endIcon={<SendIcon />}>
                 Calistir
-              </Button>
-              }
+              </LoadingButton>
             </Grid>
          { /* <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
