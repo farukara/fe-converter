@@ -81,6 +81,24 @@ export default function DashboardAppPage() {
   useEffect (() => {
     localStorage.euro = euro
   }, [euro])
+  // +++++ euroMB toggle
+  useEffect (() => {
+    if (localStorage.isUseEuroMB) {
+      setisUseEuroMB(localStorage.getItem("isUseEuroMB"))
+    }
+  }, [])
+  useEffect (() => {
+    localStorage.isUseEuroMB = isUseEuroMB
+  }, [isUseEuroMB])
+  // +++++ dolarMB toggle
+  useEffect (() => {
+    if (localStorage.isUseDolarMB) {
+      setisUseDolarMB(localStorage.getItem("isUseEuroMB"))
+    }
+  }, [])
+  useEffect (() => {
+    localStorage.isUseDolarMB = isUseDolarMB
+  }, [isUseDolarMB])
 
   // getting currency from MB
   useEffect(() => {
@@ -92,7 +110,7 @@ export default function DashboardAppPage() {
         console.log("dolar", data.dolar) */
         setEuroMB(data.euro)
         setDolarMB(data.dolar)
-        enqueueSnackbar("Merkez Bankasi Kurlari alindi...", {variant: "info"});
+        enqueueSnackbar("Merkez Bankasi Kurlari alindi...", {variant: "success"});
         // FIX: handle errors
       })
   }, [])
@@ -101,7 +119,7 @@ export default function DashboardAppPage() {
   function handleRun (e) {
     setLoading(true)
     e.preventDefault()
-    enqueueSnackbar('Ciktilariniz hazirlaniyor...', {variant: "info"});
+    enqueueSnackbar("Isleminiz yapiliyor...", {variant: "info"});
     fetch("/run", {
       method: "POST",
       body: JSON.stringify({"urls": e.target.urls.value, "kural": e.target.kural.value, "euro": e.target.euro.value, "dolar":e.target.dolar.value}),
@@ -126,6 +144,7 @@ export default function DashboardAppPage() {
       document.body.removeChild(link);
       // console.log(struct.stats)
       setLoading(false)
+      enqueueSnackbar("Isleminiz TAMAMLANDI...", {variant: "success"});
     })
     .catch((err) => {
         // return Promise.reject("Error: Something Went Wrong", err );
@@ -210,7 +229,7 @@ export default function DashboardAppPage() {
           <Grid>
           <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-            subheader={<ListSubheader>Merkez Bankasi Kurlari</ListSubheader>}
+            subheader={<ListSubheader>MB Kuru kullanilsin mi?</ListSubheader>}
           >
             <ListItem>
               <ListItemIcon>
@@ -223,6 +242,7 @@ export default function DashboardAppPage() {
                 edge="end"
                 onChange={() => setisUseEuroMB(!isUseEuroMB)}
                 checked={isUseEuroMB}
+                disabled={loading}
                 inputProps={{
                   'aria-labelledby': 'switch-list-label-euro',
                 }}
@@ -237,8 +257,9 @@ export default function DashboardAppPage() {
               </ListItemText>
               <Switch
                 edge="end"
-                      onChange={() => {setisUseDolarMB(!isUseDolarMB)}}
+                onChange={() => {setisUseDolarMB(!isUseDolarMB)}}
                 checked={isUseDolarMB}
+                disabled={loading}
                 inputProps={{
                   'aria-labelledby': 'switch-list-label-dolar',
                 }}
