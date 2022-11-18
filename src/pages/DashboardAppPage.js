@@ -3,10 +3,16 @@ import { Helmet } from 'react-helmet-async';
 import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Box, Typography, TextField, Button , FormControl, Input, InputLabel, InputAdornment} from '@mui/material';
+import { Grid, Container, Box, Paper, Typography, TextField, Button , FormControl, Input, InputLabel, InputAdornment, Snackbar, Alert, List, ListSubheader, ListItem, ListItemIcon, ListItemText, Switch } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
+// import Switch from '@mui/material/Switch';
+import WifiIcon from '@mui/icons-material/Wifi';
+import BluetoothIcon from '@mui/icons-material/Bluetooth';
+import EuroIcon from '@mui/icons-material/Euro';
+import PaidIcon from '@mui/icons-material/Paid';
 // components
+import { useSnackbar } from 'notistack';
 import Iconify from '../components/iconify';
 // sections
 import {
@@ -25,13 +31,18 @@ import {
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
+  const [isUseEuroMB, setisUseEuroMB] = useState(false);
+  const [isUseDolarMB, setisUseDolarMB] = useState(false);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const theme = useTheme();
   const [urls, setUrls] = useState ("")
   const [kural, setKural] = useState ("")
-  const [doviz, setDoviz] = useState ("")
   const [loading, setLoading] = useState (false)
   const [euro, setEuro] = useState ("")
   const [dolar, setDolar] = useState ("")
+  const [euroMB, setEuroMB] = useState ("?")
+  const [dolarMB, setDolarMB] = useState ("?")
+
 
   // local storage handling
   // +++++ urls
@@ -71,9 +82,26 @@ export default function DashboardAppPage() {
     localStorage.euro = euro
   }, [euro])
 
+  // getting currency from MB
+  useEffect(() => {
+    fetch("/api/getMB")
+      .then(res => res.json())
+      .then(data => {
+        /* console.log(data)
+        console.log("euro:", data.euro)
+        console.log("dolar", data.dolar) */
+        setEuroMB(data.euro)
+        setDolarMB(data.dolar)
+        enqueueSnackbar("Merkez Bankasi Kurlari alindi...", {variant: "info"});
+        // FIX: handle errors
+      })
+  }, [])
+
+  // handleRun starts to convert the input xml to a collection of files in zip
   function handleRun (e) {
     setLoading(true)
     e.preventDefault()
+    enqueueSnackbar('Ciktilariniz hazirlaniyor...', {variant: "info"});
     fetch("/run", {
       method: "POST",
       body: JSON.stringify({"urls": e.target.urls.value, "kural": e.target.kural.value, "euro": e.target.euro.value, "dolar":e.target.dolar.value}),
@@ -110,7 +138,7 @@ export default function DashboardAppPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | Minimal UI </title>
+        <title> XML Converter </title>
       </Helmet>
 
       <Container maxWidth="xl">
@@ -157,39 +185,91 @@ export default function DashboardAppPage() {
             ]}
           />
         </Grid> */ }
+        <Paper>
         <form onSubmit={handleRun}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField value={urls} disabled={loading}
-                onChange={(e)=> setUrls(e.target.value)} id="urls" label="XML Listesi" variant="outlined" multiline required size="small" helperText="Her url ayri bir satirda olacak"/>
+          <Grid container spacing={3} sx={{border: 0.1, boxShadow: 5,}}>
+            <Grid item xs={12} sm={12} md={10} p={6} sx={{p:3}}>
+              <LoadingButton 
+                type="submit" 
+                loading={loading} 
+                variant="contained" 
+                endIcon={<SendIcon sx = {{transform:{lg:"scale(2.0)"}, m:3}}/>} 
+                size="large" 
+                sx={{height: {md: 50, lg:100}, fontSize: 30, m:0}} fullWidth fullHeight>
+                Calistir
+              </LoadingButton>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField value={urls} disabled={loading}
+                  onChange={(e)=> setUrls(e.target.value)} id="urls" label="XML Listesi" variant="outlined" multiline required size="small" helperText="Her url ayri bir satirda olacak"/>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField value={kural} disabled={loading}
+                  onChange={(e) => setKural(e.target.value)} id="kural" label="Kurallar" variant="outlined" multiline required size="small"/>
+            </Grid>
+          <Grid>
+          <List
+            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+            subheader={<ListSubheader>Merkez Bankasi Kurlari</ListSubheader>}
+          >
+            <ListItem>
+              <ListItemIcon>
+                <EuroIcon />
+              </ListItemIcon>
+                <ListItemText id="euro" >
+                  Euro { euroMB }
+                </ListItemText>
+              <Switch
+                edge="end"
+                onChange={() => setisUseEuroMB(!isUseEuroMB)}
+                checked={isUseEuroMB}
+                inputProps={{
+                  'aria-labelledby': 'switch-list-label-euro',
+                }}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <PaidIcon />
+              </ListItemIcon>
+              <ListItemText id="switch-list-label-dolar" >
+                Dolar { dolarMB }
+              </ListItemText>
+              <Switch
+                edge="end"
+                      onChange={() => {setisUseDolarMB(!isUseDolarMB)}}
+                checked={isUseDolarMB}
+                inputProps={{
+                  'aria-labelledby': 'switch-list-label-dolar',
+                }}
+              />
+            </ListItem>
+          </List>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <TextField value={kural} disabled={loading}
-                onChange={(e) => setKural(e.target.value)} id="kural" label="Kurallar" variant="outlined" multiline required size="small"/>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Box>
+              <Box >
               <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                 <InputLabel htmlFor="euro">Euro</InputLabel>
                 <Input
-                  disabled={loading}
+                  disabled={loading || isUseEuroMB}
                   id="euro"
-                  value={euro}
+                  value={isUseEuroMB ? euroMB : euro}
                   onChange={(e) => setEuro(e.target.value)}
                   startAdornment={<InputAdornment position="start">€</InputAdornment>}
                   variant="outlined"
-                    helperText="Please enter your name"
+                  sx={{m:1}}
                 />
               </FormControl>
               <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                 <InputLabel htmlFor="dolar">Dolar</InputLabel>
                 <Input
-                  disabled={loading}
+                  disabled={loading || isUseDolarMB}
                   id="dolar"
-                  value={dolar}
+                  value={isUseDolarMB ? dolarMB : dolar}
                   onChange={(e) => setDolar(e.target.value)}
                   startAdornment={<InputAdornment position="start">$</InputAdornment>}
                   variant="outlined"
+                  sx={{m:1}}
                 />
               </FormControl>
             </Box>
@@ -198,11 +278,6 @@ export default function DashboardAppPage() {
           {/* <Grid onClick={handleRun} item xs={12} sm={6} md={3}>
             <CCRun title="Calistir" total={0} icon={'ant-design:android-filled'}  required/>
           </Grid> */}
-          <Grid item xs={12} sm={6} md={3}>
-              <LoadingButton type="submit" loading={loading} variant="contained" endIcon={<SendIcon />}>
-                Calistir
-              </LoadingButton>
-            </Grid>
          { /* <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
           </Grid>
@@ -343,6 +418,7 @@ export default function DashboardAppPage() {
           </Grid> */}
         </Grid>
         </form>
+        </Paper>
       </Container>
     </>
   );
