@@ -3,6 +3,7 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 //
+import Home from './pages/Home';
 import BlogPage from './pages/BlogPage';
 import BlogDetails from './pages/BlogDetails';
 import UserPage from './pages/UserPage';
@@ -20,6 +21,7 @@ export default function Router() {
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
+        { path: 'home', element: <Home word={1}/> },
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
