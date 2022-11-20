@@ -160,7 +160,11 @@ export default function DashboardAppPage() {
         <title> XML Converter </title>
       </Helmet>
 
-      <Container maxWidth="xl">
+      <Container maxWidth="xl"
+        sx={{
+          width: "90%",
+        }}
+      >
         <Typography variant="h4" sx={{ mb: 5 }}>
           Merhaba, hosgeldin
         </Typography>
@@ -206,7 +210,7 @@ export default function DashboardAppPage() {
         </Grid> */ }
         <Paper>
         <form onSubmit={handleRun}>
-          <Grid container spacing={3} sx={{border: 0.1, boxShadow: 5,}}>
+            <Grid container spacing={3}>
             <Grid item xs={12} sm={12} md={10} p={6} sx={{p:3}}>
               <LoadingButton 
                 type="submit" 

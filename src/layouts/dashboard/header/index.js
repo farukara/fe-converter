@@ -16,9 +16,9 @@ import NotificationsPopover from './NotificationsPopover';
 
 const NAV_WIDTH = 280;
 
-const HEADER_MOBILE = 64;
+const HEADER_MOBILE = 54; // original 64
 
-const HEADER_DESKTOP = 92;
+const HEADER_DESKTOP = 72; // original: 92
 
 const StyledRoot = styled(AppBar)(({ theme }) => ({
   ...bgBlur({ color: theme.palette.background.default }),
@@ -69,7 +69,7 @@ export default function Header({ onOpenNav }) {
           }}
         >
           <LanguagePopover />
-          <NotificationsPopover />
+          { /* <NotificationsPopover />  */}
           <AccountPopover />
         </Stack>
       </StyledToolbar>

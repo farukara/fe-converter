@@ -3,7 +3,8 @@ import { faker } from '@faker-js/faker';
 // ----------------------------------------------------------------------
 
 const POST_TITLES = [
-  'Whiteboard Templates By Industry Leaders',
+  'XML İşlemleri',
+  /* 'Whiteboard Templates By Industry Leaders',
   'Tesla Cybertruck-inspired camper trailer for Tesla fans who can’t just wait for the truck!',
   'Designify Agency Landing Page Design',
   '✨What is Done is Done ✨',
@@ -26,20 +27,27 @@ const POST_TITLES = [
   'Akkers van Margraten',
   'Gradient Ticket icon',
   'Here’s a Dyson motorcycle concept that doesn’t ‘suck’!',
-  'How to Animate a SVG with border-image',
+  'How to Animate a SVG with border-image', */
 ];
 
-const posts = [...Array(23)].map((_, index) => ({
-  id: faker.datatype.uuid(),
+const POST_CONTENTS = [
+  `<h2>XML Bayiliği ve Dropshipping</h2>
+
+Dropshipping stok olmaksızın satış yapmanızı sağlayan bir satış yöntemidir. Mantık ise sizlerin satmayı planladığınız ürünleri uygun pazardan alıp kâr sağlayarak satışını gerçekleştirmeniz üzerine kuruludur. Bu bağlamda ise XML Bayiliği hizmeti sunan firmalar işlerinizi oldukça kolaylaştırarak hem güvenli hem de sabır gerektirmeksizin gelir sağlamanızı sağlamaktadır.`,
+];
+const posts = [...Array(POST_TITLES.length)].map((_, index) => ({
+  // id: faker.datatype.uuid(),
+  id: `${index+1}`,
   cover: `/assets/images/covers/cover_${index + 1}.jpg`,
-  title: POST_TITLES[index + 1],
-  createdAt: faker.date.past(),
+  title: POST_TITLES[index],
+  content: POST_CONTENTS[index],
+  createdAt: "2022-06-25",   
   view: faker.datatype.number(),
   comment: faker.datatype.number(),
   share: faker.datatype.number(),
   favorite: faker.datatype.number(),
   author: {
-    name: faker.name.fullName(),
+    name: "Aslı Demir",
     avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
   },
 }));

@@ -1,3 +1,4 @@
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { Grid, Button, Container, Stack, Typography } from '@mui/material';
@@ -21,7 +22,8 @@ export default function BlogPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Blog | Minimal UI </title>
+        <title> Dashboard: Blog | Converter </title>
+        <meta property="og:content" content="xml dönüştürme, xml bayiliği"/>
       </Helmet>
 
       <Container>
@@ -29,9 +31,10 @@ export default function BlogPage() {
           <Typography variant="h4" gutterBottom>
             Blog
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Post
-          </Button>
+          <Outlet />
+          {/* <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+              New Post
+            </Button> */}
         </Stack>
 
         <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between">
@@ -41,7 +44,7 @@ export default function BlogPage() {
 
         <Grid container spacing={3}>
           {POSTS.map((post, index) => (
-            <BlogPostCard key={post.id} post={post} index={index} />
+              <BlogPostCard key={post.id} post={post} index={index} />
           ))}
         </Grid>
       </Container>

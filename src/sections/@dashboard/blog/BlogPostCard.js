@@ -1,7 +1,8 @@
+import { Link } from "react-router-dom"
 import PropTypes from 'prop-types';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Link, Card, Grid, Avatar, Typography, CardContent } from '@mui/material';
+import { Box, Card, Grid, Avatar, Typography, CardContent } from '@mui/material';
 // utils
 import { fDate } from '../../../utils/formatTime';
 import { fShortenNumber } from '../../../utils/formatNumber';
@@ -22,6 +23,7 @@ const StyledTitle = styled(Link)({
   WebkitLineClamp: 2,
   display: '-webkit-box',
   WebkitBoxOrient: 'vertical',
+  cursor: "pointer",
 });
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -57,9 +59,11 @@ BlogPostCard.propTypes = {
 };
 
 export default function BlogPostCard({ post, index }) {
-  const { cover, title, view, comment, share, author, createdAt } = post;
+  const { cover, title, id, view, comment, share, author, createdAt } = post;
   const latestPostLarge = index === 0;
   const latestPost = index === 1 || index === 2;
+
+  console.log(post)
 
   const POST_INFO = [
     { number: comment, icon: 'eva:message-circle-fill' },
@@ -136,6 +140,7 @@ export default function BlogPostCard({ post, index }) {
           </Typography>
 
           <StyledTitle
+            to={id}
             color="inherit"
             variant="subtitle2"
             underline="hover"
