@@ -11,14 +11,16 @@ import POSTS from '../_mock/blog';
 // ----------------------------------------------------------------------
 
 const SORT_OPTIONS = [
-  { value: 'latest', label: 'Latest' },
-  { value: 'popular', label: 'Popular' },
-  { value: 'oldest', label: 'Oldest' },
+  { value: 'yeni', label: 'En Yeni' },
+  { value: 'populer', label: 'Populer' },
+  { value: 'eski', label: 'En Eski' },
 ];
 
 // ----------------------------------------------------------------------
 
 export default function BlogPage() {
+  function handleSort() {
+  }
   return (
     <>
       <Helmet>
@@ -39,7 +41,7 @@ export default function BlogPage() {
 
         <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between">
           <BlogPostsSearch posts={POSTS} />
-          <BlogPostsSort options={SORT_OPTIONS} />
+          <BlogPostsSort options={SORT_OPTIONS} onSort={() => handleSort}/>
         </Stack>
 
         <Grid container spacing={3}>
