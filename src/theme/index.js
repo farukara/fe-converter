@@ -25,6 +25,12 @@ export default function ThemeProvider({ children }) {
       typography,
       shadows: shadows(),
       customShadows: customShadows(),
+      props: {
+        TextField: {
+          fullWidth: true,
+          size: "small"
+        },
+      },
     }),
     []
   );

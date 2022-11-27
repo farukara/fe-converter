@@ -129,7 +129,11 @@ export default function DashboardAppPage() {
     })
     .then(res => {
       // res.blob()) 
-        return res.blob()
+        if (res.status !== 200) {
+          console.log("response is not 200")
+          return
+        }
+        res.blob()
     })
     .then (files => {
       // console.log(struct.files)
@@ -146,11 +150,14 @@ export default function DashboardAppPage() {
       setLoading(false)
       enqueueSnackbar("Isleminiz TAMAMLANDI...", {variant: "success"});
     })
-    .catch((err) => {
-        // return Promise.reject("Error: Something Went Wrong", err );
-        // Promise.reject(new Error('Something went wrong'));
-        err.json()
-          .then(errjson => console.log(errjson))
+    .catch(err => {
+      // return Promise.reject("Error: Something Went Wrong", err );
+      // Promise.reject(new Error('Something went wrong'));
+      err.json()
+        .then(errjson => {
+          console.log(errjson)
+          enqueueSnackbar("Bir hata olustu...", {variant: "error"});
+        })
     })
   }
 
